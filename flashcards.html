@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/6.24.0/babel.js"></script>
+    <script crossorigin src="https://unpkg.com/react@17/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@17/umd/react-dom.development.js"></script>
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css"
+      integrity="sha384-9gVQ4dYFwwWSjIDZnLEWnxCjeSWFphJiwGPXr1jddIhOegiu1FwO5qRGvFXOdJZ4"
+      crossorigin="anonymous"
+    />
+    <title>Flashcards</title>
+    <style>
+      input {
+        margin: 0rem 1rem;
+      }
+      .container {
+        width: 60vw;
+        text-align: center;
+      }
+      .title {
+        margin-top: 20px;
+      }
+
+      .card {
+        padding: 2rem 2rem;
+        text-align: center;
+      }
+
+      .card h3 {
+        font-size: 3rem;
+        letter-spacing: 1rem;
+        margin-bottom: 15px;
+      }
+
+      .btn-medium {
+        margin: 0.5rem 0.5rem;
+      }
+
+      .btnContainer {
+        padding: 1rem;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="app">
+      <!-- This tells us to decompose JSX to javascript -->
+      <script type="text/babel">
+        class Card extends React.Component {
+          render() {
+            return (
+              <React.Fragment>
+                <div className="title">
+                  <h1> Flashcards </h1>
+                </div>
+                <div className="card">
+                  <h3> {this.props.showAnswer ? this.props.a : this.props.q} </h3>
+                  <div className="btnContainer">
+                    <button className="btn btn-medium btn-primary" onClick={() => this.props.flipCard()}>
+                      Flip Card
+                    </button>
+                    <button className="btn btn-medium btn-warning" onClick={this.props.nextCard}>
+                      Next Card
+                    </button>
+                    <button className="btn btn-medium btn-danger" onClick={this.props.shuffleCards}>
+                      Shuffle
+                    </button>
+                  </div>
+                </div>
+              </React.Fragment>
+            );
+          }
+        }
+
+        class App extends React.Component {
+          constructor(props) {
+            super(props);
+            this.state = {
+              cards: [
+                { q: "2+2", a: "4" },
+                { q: "5+6", a: "11" },
+              ],
+              index: 0,
+              showAnswer: false,
+              questionInput: "",
+              answerInput: "",
+            };
+          }
+
+          shuffleCards = () => {
+            const shuffled = [...this.state.cards];
+            for (let i = this.state.cards.length - 1; i > 0; i--) {
+              const j = Math.floor(Math.random() * (i + 1));
+              [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+            }
+
+            this.setState((state) => ({
+              cards: shuffled,
+            }));
+          };
+
+          nextCard = () => {
+            console.log("Entered");
+            const arrLength = this.state.cards.length;
+            this.setState((state) => ({
+              index: (state.index + 1) % arrLength,
+            }));
+          };
+
+          flipCard = () => {
+            this.setState((state) => ({
+              showAnswer: !state.showAnswer,
+            }));
+          };
+
+          handleQInput = (event) => {
+            this.setState(() => ({
+              questionInput: event.target.value,
+            }));
+          };
+
+          handleAInput = (event) => {
+            this.setState(() => ({
+              answerInput: event.target.value,
+            }));
+          };
+
+          addQuestion = () => {
+            const newCard = { q: this.state.questionInput, a: this.state.answerInput };
+            console.log(newCard);
+            this.setState((state) => ({
+              cards: [...state.cards, newCard],
+              questionInput: "",
+              answerInput: "",
+            }));
+          };
+
+          render() {
+            const currentCard = this.state.cards[this.state.index];
+
+            return (
+              <div className="container">
+                {this.state.cards.length == 0 ? (
+                  <h1> No card exists </h1>
+                ) : (
+                  <Card
+                    showAnswer={this.state.showAnswer}
+                    flipCard={this.flipCard}
+                    nextCard={this.nextCard}
+                    shuffleCards={this.shuffleCards}
+                    q={currentCard.q}
+                    a={currentCard.a}
+                  />
+                )}
+                <div className="mt-3">
+                  <input
+                    type="text"
+                    placeholder="Enter question: "
+                    value={this.state.questionInput}
+                    onChange={(event) => this.handleQInput(event)}
+                  />
+                  <input
+                    type="text"
+                    placeholder="Enter answer: "
+                    value={this.state.answerInput}
+                    onChange={(event) => this.handleAInput(event)}
+                  />
+                  <button type="submit" className="btn" onClick={this.addQuestion}>
+                    Submit
+                  </button>
+                </div>
+              </div>
+            );
+          }
+        }
+
+        ReactDOM.render(<App />, document.querySelector("#app"));
+      </script>
+    </div>
+  </body>
+</html>

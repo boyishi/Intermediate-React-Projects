@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>To-do</title>
+    <style>
+      .incorrect {
+        color: red;
+      }
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/6.24.0/babel.js"></script>
+    <script crossorigin src="https://unpkg.com/react@17/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@17/umd/react-dom.development.js"></script>
+  </head>
+  <body>
+    <div id="app">
+      <!-- This tells us to decompose JSX to javascript -->
+      <script type="text/babel">
+        class App extends React.Component {
+          constructor(props) {
+            super(props);
+            this.state = {
+              tasks: [],
+              input: "",
+            };
+          }
+
+          handleChange = (event) => {
+            this.setState(() => ({
+              input: event.target.value,
+            }));
+          };
+
+          addTask = () => {
+            this.setState((state) => ({
+              tasks: [...state.tasks, state.input],
+              input: "",
+            }));
+          };
+
+          deleteTask = (event) => {
+            const index = event.target.dataset.index;
+            this.setState((state) => {
+              const tasks = [...state.taskList];
+              tasks.splice(index, 1);
+              return {
+                tasks,
+              };
+            });
+          };
+
+          render() {
+            return (
+              <div>
+                <h1> Tasks </h1>
+                <ul>
+                  {this.state.tasks.map((task, i) => (
+                    <li key={i}>
+                      {task}
+                      <button data-index={i} onClick={this.deleteTask}>
+                        x
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+                <div>
+                  <input onChange={this.handleChange} value={this.state.input} />
+                  <button onClick={this.addTask}> Add task </button>
+                </div>
+                Number of Tasks: {this.state.tasks.length}
+              </div>
+            );
+          }
+        }
+
+        ReactDOM.render(<App />, document.querySelector("#app"));
+      </script>
+    </div>
+  </body>
+</html>
